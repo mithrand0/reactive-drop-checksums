@@ -37,16 +37,16 @@ jobs:
         id: cache-app
         uses: actions/cache@v4
         with:
-          path: .
+          path: ${{ github.workspace }}\asrd
           key: cache-app
 
       - name: Setup steamcmd
         uses: CyberAndrii/setup-steamcmd@v1
       - name: Download the game
-        run: steamcmd +force_install_dir \asrd +logon anonymous +app_update 563560 +quit
+        run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 +quit
       - name: Run the client
         run: |
-          cd \asrd
+          cd ${{ github.workspace }}\asrd
           echo "cvarlist log cvars.txt; quit" > reactivedrop/cfg/test.cfg
           cmd /c start /wait reactivedrop.exe -textmode +exec test
       - name: Run the server
