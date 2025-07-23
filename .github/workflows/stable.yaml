@@ -28,7 +28,7 @@ jobs:
             depots
 
   generate-convarlist:
-    name: generate client and server convarlist
+    name: run client and server
     runs-on: windows-2022
     timeout-minutes: 15
     needs: get-depots
@@ -53,8 +53,8 @@ jobs:
       - name: Run the server
         run: |
           cd ${{ github.workspace }}\asrd
-          echo "sv_lan 1; map lobby; cvarlist log cvars-server.txt; quit" > reactivedrop/cfg/servertest.cfg
-          cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +exec servertest
+          echo "cvarlist log cvars-server.txt; quit" > reactivedrop/cfg/servertest.cfg
+          cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec servertest +map lobby
           mv ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
       - name: Upload artifact
         uses: actions/upload-artifact@v4
