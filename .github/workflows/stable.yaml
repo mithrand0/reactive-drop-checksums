@@ -8,10 +8,10 @@ on:
       - build_stable
 
 jobs:
-  generate-checksums:
-    name: generate checksum list
+  get-depots:
+    name: download steam depot
     runs-on: windows-2022
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - name: Download steam depot downloader
         run: |
@@ -30,15 +30,26 @@ jobs:
   generate-convarlist:
     name: generate client convarlist
     runs-on: windows-2022
-    timeout-minutes: 10
+    timeout-minutes: 15
+    needs: get-depots
     steps:
-      - name: Download steamcmd
-        run: |
-          curl -L -o steamcmd.zip https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip
-          tar -xf steamcmd.zip
+      - name: Cache files
+        id: cache-app
+        uses: actions/cache@v4
+        with:
+          path: .
+          key: cache-app
+
+      - name: Setup steamcmd
+        uses: CyberAndrii/setup-steamcmd@v1
       - name: Download the game
-        run: ./steamcmd.exe +force_install_dir asrd +logon anonymous +app_update 563560 +quit
-      - name: Run the game
+        run: steamcmd +force_install_dir \asrd +logon anonymous +app_update 563560 +quit
+      - name: Run the client
+        run: |
+          cd \asrd
+          echo "cvarlist log cvars.txt; quit" > reactivedrop/cfg/test.cfg
+          cmd /c start /wait reactivedrop.exe -textmode +exec test
+      - name: Run the server
         run: |
           cd asrd
           echo "cvarlist log cvars.txt; quit" > reactivedrop/cfg/test.cfg
