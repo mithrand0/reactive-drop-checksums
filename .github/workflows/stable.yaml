@@ -59,7 +59,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rd-convar-list
+          name: rd-artifacts
           path: |
             ${{ github.workspace }}/asrd/reactivedrop/cvars-client.txt
             ${{ github.workspace }}/asrd/reactivedrop/cvars-server.txt
