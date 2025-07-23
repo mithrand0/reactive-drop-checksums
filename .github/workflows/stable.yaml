@@ -1,0 +1,51 @@
+name: Continuous integration
+on:
+  push:
+    branches:
+      - master
+  repository_dispatch:
+    types:
+      - build_stable
+
+jobs:
+  generate-checksums:
+    name: generate checksum list
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - name: Download steam depot downloader
+        run: |
+          curl -L -o downloader.zip https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_3.4.0/DepotDownloader-windows-x64.zip
+          tar -xf downloader.zip
+      - name: Download depot manifest
+        run: |
+          ./DepotDownloader.exe -app 563560 -depot 563561 -manifest-only -beta beta
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rd-depots
+          path: |
+            depots
+
+  generate-convarlist:
+    name: generate client convarlist
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - name: Download steamcmd
+        run: |
+          curl -L -o steamcmd.zip https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip
+          tar -xf steamcmd.zip
+      - name: Download the game
+        run: ./steamcmd.exe +force_install_dir asrd +logon anonymous +app_update 563560 +quit
+      - name: Run the game
+        run: |
+          cd asrd
+          echo "cvarlist log cvars.txt; quit" > reactivedrop/cfg/test.cfg
+          cmd /c start /wait reactivedrop.exe -textmode +exec test
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rd-convar-list
+          path: |
+            reactivedrop/cvars.txt
