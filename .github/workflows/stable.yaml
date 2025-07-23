@@ -31,7 +31,6 @@ jobs:
     name: run client and server
     runs-on: windows-2022
     timeout-minutes: 15
-    needs: get-depots
     steps:
       - name: Cache files
         id: cache-app
