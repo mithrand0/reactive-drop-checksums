@@ -43,20 +43,24 @@ jobs:
       - name: Setup steamcmd
         uses: CyberAndrii/setup-steamcmd@v1
       - name: Download the game
-        run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 +quit
+        run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 +app_update 1007 +quit
       - name: Run the client
         run: |
           cd ${{ github.workspace }}\asrd
-          echo "cvarlist log cvars.txt; quit" > reactivedrop/cfg/test.cfg
+          echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
           cmd /c start /wait reactivedrop.exe -textmode +exec test
       - name: Run the server
         run: |
-          cd asrd
-          echo "cvarlist log cvars.txt; quit" > reactivedrop/cfg/test.cfg
-          cmd /c start /wait reactivedrop.exe -textmode +exec test
+          echo "sv_lan 1; map lobby; cvarlist log cvars-server.txt; quit" > reactivedrop/cfg/servertest.cfg
+          cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +exec servertest
+      - name: Show files
+        run: |
+          dir
+          dir reactivedrop
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: rd-convar-list
           path: |
-            reactivedrop/cvars.txt
+            reactivedrop/cvars-client.txt
+            reactivedrop/cvars-server.txt
