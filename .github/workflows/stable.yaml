@@ -8,26 +8,7 @@ on:
       - build_stable
 
 jobs:
-  get-depots:
-    name: download steam depot
-    runs-on: windows-2022
-    timeout-minutes: 5
-    steps:
-      - name: Download steam depot downloader
-        run: |
-          curl -L -o downloader.zip https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_3.4.0/DepotDownloader-windows-x64.zip
-          tar -xf downloader.zip
-      - name: Download depot manifest
-        run: |
-          ./DepotDownloader.exe -app 563560 -depot 563561 -manifest-only -beta beta
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: rd-depots
-          path: |
-            depots
-
-  generate-convarlist:
+  run-game:
     name: run client and server
     runs-on: windows-2022
     timeout-minutes: 15
