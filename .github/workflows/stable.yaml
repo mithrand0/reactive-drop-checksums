@@ -51,16 +51,13 @@ jobs:
           cmd /c start /wait reactivedrop.exe -textmode +exec test
       - name: Run the server
         run: |
+          cd ${{ github.workspace }}\asrd
           echo "sv_lan 1; map lobby; cvarlist log cvars-server.txt; quit" > reactivedrop/cfg/servertest.cfg
           cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +exec servertest
-      - name: Show files
-        run: |
-          dir
-          dir reactivedrop
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: rd-convar-list
           path: |
-            reactivedrop/cvars-client.txt
-            reactivedrop/cvars-server.txt
+            ${{ github.workspace }}/asrd/reactivedrop/cvars-client.txt
+            ${{ github.workspace }}/asrd/reactivedrop/cvars-server.txt
