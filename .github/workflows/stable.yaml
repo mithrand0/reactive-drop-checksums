@@ -36,13 +36,16 @@ jobs:
           echo "version; cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/servertest.cfg
           cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec servertest
           mv ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
+
+      - name: Checkout project
+        uses: actions/checkout@v4
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
       - name: Generate convarlist
         run: |
-          cd ${{ github.workspace }}
           php generate-convarlist "${{ github.workspace }}" > ${{ github.workspace }}/asrd/convarlist.wiki.txt
       - name: Upload artifact
         uses: actions/upload-artifact@v4
