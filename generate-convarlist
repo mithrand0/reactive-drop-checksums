@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+$dir = $argc > 1 ? $argv[1] : __DIR__;
+
 class convar {
 
   const FLAGS = [
@@ -18,9 +20,9 @@ class convar {
   public static function factory(array $row) {
     $cvar = new self;
 
-    $cvar->name = $row['Name'];
-    $cvar->default = $row['Value'];
-    $cvar->description = $row['Help Text'];
+    $cvar->name = trim($row['Name']);
+    $cvar->default = trim($row['Value']);
+    $cvar->description = trim($row['Help Text']);
 
     foreach (self::FLAGS as $flag => $search) {
       if ($row[$search]) {
@@ -50,7 +52,7 @@ $cvargroup = [];
 foreach (['client', 'server'] as $t) {
   $header = [];
 
-  $file = sprintf('%s/asrd/reactivedrop/cvars-%s.txt', __DIR__, $t);
+  $file = sprintf('%s/asrd/reactivedrop/cvars-%s.txt', $dir, $t);
   $f = fopen($file, 'r');
 
   while (($data = fgetcsv($f, 4096, ',')) !== false) {
@@ -65,21 +67,10 @@ foreach (['client', 'server'] as $t) {
 }
 
 
-$file = sprintf('%s/asrd/console-client.log', __DIR__);
-$f = fopen($file, 'r');
-$data = fread($f, 4096);
-fclose($f);
-
-$matches = [];
-preg_match_all('/^((Protocol)|(Exe)) (.*)$/m', $data, $matches);
-
 e("
 {{cmdlist|asrd}}
 
 {{note|This file was updated (generated) on %s}}
-
-{{CodeBlock|src=reactivedrop.log|lang=Log|%s
-}}
 
 ==Notes==
 *Descriptions with '''**''' denote community modified descriptions and my not be entirely accurate.
@@ -87,17 +78,17 @@ e("
 *Some commands are legacy commands or are \"not hooked up to code\".
 *Some commands may need developer mode (launch option -dev) in order to work.
 
+==Index==
 {{Compact ToC}}
 ",
-date(DATE_RSS),
-implode(PHP_EOL, current($matches))
+date(DATE_RSS)
 );
 
 foreach ($cvargroup as $group => $cvars) {
   e('===%s===', $group);
   e('');
   e('{| class="standard-table" style="width: 100%;"');
-  e('Command !! Default Value !! Flags !! Description');
+  e('! Command !! Default Value !! Flags !! Description');
   e('|-');
 
   foreach ($cvars as $cvar) {
