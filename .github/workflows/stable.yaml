@@ -42,6 +42,7 @@ jobs:
           php-version: '8.4'
       - name: Generate convarlist
         run:
+          cd ${{ github.workspace }}\asrd
           php generate-convarlist "${{ github.workspace }}" > ${{ github.workspace }}/asrd/convarlist.wiki.txt
       - name: Upload artifact
         uses: actions/upload-artifact@v4
