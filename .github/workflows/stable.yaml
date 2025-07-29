@@ -76,7 +76,7 @@ jobs:
 
       - name: Generate convarlist
         run: |
-          php generate-convarlist ${{ github.workspace }} > convarlist.wiki.txt
+          php generate-convarlist > convarlist.wiki.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
