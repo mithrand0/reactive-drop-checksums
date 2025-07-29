@@ -27,13 +27,13 @@ jobs:
       - name: Run the client
         run: |
           cd ${{ github.workspace }}\asrd
-          echo "version; cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
+          echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
           cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test
           mv ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client.log
       - name: Run the server
         run: |
           cd ${{ github.workspace }}\asrd
-          echo "version; cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/servertest.cfg
+          echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/servertest.cfg
           cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec servertest
           mv ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
 
@@ -46,6 +46,7 @@ jobs:
           php-version: '8.4'
       - name: Generate convarlist
         run: |
+          find . -type f name 'cvars-*'
           php generate-convarlist ${{ github.workspace }} > convarlist.wiki.txt
           mv convarlist.wiki.txt ${{ github.workspace }}\asrd\convarlist.wiki.txt
       - name: Upload artifact
