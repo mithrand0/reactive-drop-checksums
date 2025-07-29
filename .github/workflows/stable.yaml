@@ -62,6 +62,10 @@ jobs:
           name: rd-artifacts
           path: .
 
+      - name: List files
+        run: |
+          find . -type f
+
       - name: Checkout project
         uses: actions/checkout@v4
 
@@ -72,7 +76,6 @@ jobs:
 
       - name: Generate convarlist
         run: |
-          find . -type f -name 'cvars-*'
           php generate-convarlist ${{ github.workspace }} > convarlist.wiki.txt
 
       - name: Upload artifact
@@ -80,5 +83,3 @@ jobs:
         with:
           name: rd-convarlist-wiki
           path: convarlist.wiki.txt
-
-
