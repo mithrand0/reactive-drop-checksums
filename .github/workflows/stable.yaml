@@ -72,7 +72,7 @@ jobs:
 
       - name: Generate convarlist
         run: |
-          find . -type f name 'cvars-*'
+          find . -type f -name 'cvars-*'
           php generate-convarlist ${{ github.workspace }} > convarlist.wiki.txt
 
       - name: Upload artifact
