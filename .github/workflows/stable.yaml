@@ -24,12 +24,14 @@ jobs:
         uses: CyberAndrii/setup-steamcmd@v1
       - name: Download the game
         run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 +app_update 1007 +quit
+
       - name: Run the client
         run: |
           cd ${{ github.workspace }}\asrd
           echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
           cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test
           mv ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client.log
+
       - name: Run the server
         run: |
           cd ${{ github.workspace }}\asrd
@@ -37,19 +39,7 @@ jobs:
           cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec servertest
           mv ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
 
-      - name: Checkout project
-        uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-      - name: Generate convarlist
-        run: |
-          find . -type f name 'cvars-*'
-          php generate-convarlist ${{ github.workspace }} > convarlist.wiki.txt
-          mv convarlist.wiki.txt ${{ github.workspace }}\asrd\convarlist.wiki.txt
-      - name: Upload artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: rd-artifacts
@@ -58,5 +48,36 @@ jobs:
             ${{ github.workspace }}/asrd/reactivedrop/cvars-server.txt
             ${{ github.workspace }}/asrd/console-client.log
             ${{ github.workspace }}/asrd/console-server.log
-            ${{ github.workspace }}/asrd/convarlist.wiki.txt
+
+
+  generate-files:
+    name: generate additional files
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rd-artifacts
+          path: .
+
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - name: Generate convarlist
+        run: |
+          find . -type f name 'cvars-*'
+          php generate-convarlist ${{ github.workspace }} > convarlist.wiki.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rd-convarlist-wiki
+          path: convarlist.wiki.txt
+
 
