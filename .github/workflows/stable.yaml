@@ -61,7 +61,7 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/reactive-drop-anticheat
           token: ${{ secrets.CR_PAT }}
-          event-type: build
+          event-type: build_stable
 
   generate-files:
     name: generate additional files
