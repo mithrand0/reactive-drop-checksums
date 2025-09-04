@@ -23,7 +23,7 @@ jobs:
       - name: Setup steamcmd
         uses: CyberAndrii/setup-steamcmd@v1
       - name: Download the game
-        run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 -beta beta validate +app_update 1007 validate +quit
+        run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 -beta beta +app_update 1007 +quit
 
       - name: Run the client
         run: |
@@ -96,5 +96,6 @@ jobs:
         with:
           name: rd-convarlist-wiki
           path: convarlist.wiki.txt
+
 
 
