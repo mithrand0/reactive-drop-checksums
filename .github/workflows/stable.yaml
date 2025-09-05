@@ -58,7 +58,8 @@ jobs:
             ${{ github.workspace }}/asrd/reactivedrop/cvars-client.txt
             ${{ github.workspace }}/asrd/reactivedrop/cvars-server.txt
             ${{ github.workspace }}/asrd/console-client.log
-            ${{ github.workspace }}/asrd/depotcache/*.manifest
+            ${{ github.workspace }}/asrd/console-server.log
+            ${{ github.workspace }}/asrd/depotcache
 
   dispatch-anticheat:
     name: dispatch anticheat build
