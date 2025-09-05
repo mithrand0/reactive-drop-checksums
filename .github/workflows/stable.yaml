@@ -13,6 +13,9 @@ jobs:
     runs-on: windows-2022
     timeout-minutes: 15
     steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
       - name: Cache files
         id: cache-app
         uses: actions/cache@v4
@@ -24,6 +27,12 @@ jobs:
         uses: CyberAndrii/setup-steamcmd@v1
       - name: Download the game
         run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 -beta beta +app_update 1007 +quit
+
+      - name: Generate checksums
+        run: |
+          ./generate-checksums.ps1 ${{ github.workspace }}\asrd
+          cat checksums.txt
+          mv -f checksums.txt ${{ github.workspace }}\asrd\reactivedrop\checksums.txt
 
       - name: Run the client
         run: |
@@ -48,6 +57,7 @@ jobs:
             ${{ github.workspace }}/asrd/reactivedrop/cvars-server.txt
             ${{ github.workspace }}/asrd/console-client.log
             ${{ github.workspace }}/asrd/console-server.log
+            ${{ github.workspace }}/asrd/reactivedrop/checksums.txt
 
   dispatch-anticheat:
     name: dispatch anticheat build
