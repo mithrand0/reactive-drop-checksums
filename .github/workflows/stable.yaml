@@ -23,10 +23,18 @@ jobs:
           path: ${{ github.workspace }}\asrd
           key: cache-app
 
+      - name: Cleanup ${{ github.workspace }}\asrd
+        run: |
+          ./cleanup-steamcmd.ps1
+
       - name: Setup steamcmd
         uses: CyberAndrii/setup-steamcmd@v1
       - name: Download the game
         run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 -beta beta +app_update 1007 +quit
+
+      - name: Cleanup
+        run: |
+          ./cleanup-steamcmd.ps1 ${{ github.workspace }}\asrd
 
       - name: Generate checksums
         run: |
