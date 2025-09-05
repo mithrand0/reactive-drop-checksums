@@ -48,7 +48,7 @@ jobs:
 
       - name: Manifest
         run: |
-          cp -Force C:\hostedtoolcache\windows\steamcmd\latest\i386\depotcache ${{ github.workspace }}/asrd/depotcache
+          cp -Force -Recurse C:\hostedtoolcache\windows\steamcmd\latest\i386\depotcache ${{ github.workspace }}/asrd/depotcache
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
