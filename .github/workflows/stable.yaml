@@ -46,6 +46,11 @@ jobs:
           cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec servertest
           mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
 
+      - name: Manifest
+        run: |
+          rm -Force ${{ github.workspace }}/asrd/depotcache
+          cp -Force C:\hostedtoolcache\windows\steamcmd\latest\i386\depotcache ${{ github.workspace }}/asrd/depotcache
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -54,7 +59,7 @@ jobs:
             ${{ github.workspace }}/asrd/reactivedrop/cvars-client.txt
             ${{ github.workspace }}/asrd/reactivedrop/cvars-server.txt
             ${{ github.workspace }}/asrd/console-client.log
-            C:\hostedtoolcache\windows\steamcmd\latest\i386\depotcache\*
+            ${{ github.workspace }}/asrd/depotcache/*.manifest
 
   dispatch-anticheat:
     name: dispatch anticheat build
