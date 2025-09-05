@@ -23,9 +23,9 @@ jobs:
           path: ${{ github.workspace }}\asrd
           key: cache-app
 
-      - name: Cleanup ${{ github.workspace }}\asrd
+      - name: Cleanup
         run: |
-          ./cleanup-steamcmd.ps1
+          ./cleanup-steamcmd.ps1  ${{ github.workspace }}\asrd
 
       - name: Setup steamcmd
         uses: CyberAndrii/setup-steamcmd@v1
