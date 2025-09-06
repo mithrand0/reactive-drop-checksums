@@ -6,6 +6,7 @@ on:
   repository_dispatch:
     types:
       - build_stable
+  workflow_dispatch: {}
 
 jobs:
   run-game:
@@ -108,6 +109,7 @@ jobs:
         with:
           name: rd-convarlist-wiki
           path: convarlist.wiki.txt
+
 
 
 
