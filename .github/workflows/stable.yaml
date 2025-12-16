@@ -63,7 +63,7 @@ jobs:
             ${{ github.workspace }}/asrd/depotcache
 
   dispatch-anticheat:
-    name: dispatch anticheat build
+    name: dispatch depending repositories
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     needs: run-game
