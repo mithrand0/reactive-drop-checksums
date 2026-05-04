@@ -86,6 +86,10 @@ e("
 date(DATE_RSS)
 );
 
+function compare(convar $a, convar $b) {
+  return strnatcasecmp($a->name, $b->name);
+}
+
 foreach ($cvargroup as $group => $cvars) {
   e('===%s===', $group);
   e('');
@@ -93,7 +97,8 @@ foreach ($cvargroup as $group => $cvars) {
   e('! Command !! Default Value !! Flags !! Description');
   e('|-');
 
-  ksort($cvars);
+  uasort($cvars, 'compare');
+
   foreach ($cvars as $cvar) {
     e(
       '| %s || %s || %s || %s',
