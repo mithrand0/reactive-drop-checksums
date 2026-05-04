@@ -48,9 +48,8 @@ jobs:
       - name: Run the server
         run: |
           cd ${{ github.workspace }}\asrd
-          echo "cvarlist_rd 3; map lobby; quit" > reactivedrop/cfg/servertest.cfg
+          echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/servertest.cfg
           cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec servertest
-          findstr /b "\""" ${{ github.workspace }}\asrd\reactivedrop\console.log > ${{ github.workspace }}/asrd/reactivedrop/cvars-server.txt
           mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
 
       - name: Manifest
