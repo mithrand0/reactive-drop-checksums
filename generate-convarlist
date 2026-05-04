@@ -93,6 +93,7 @@ foreach ($cvargroup as $group => $cvars) {
   e('! Command !! Default Value !! Flags !! Description');
   e('|-');
 
+  ksort($cvars);
   foreach ($cvars as $cvar) {
     e(
       '| %s || %s || %s || %s',
