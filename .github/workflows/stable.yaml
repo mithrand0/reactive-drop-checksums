@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
   repository_dispatch:
     types:
       - build_stable
@@ -31,16 +34,24 @@ jobs:
       - name: Setup steamcmd
         uses: CyberAndrii/setup-steamcmd@v1
       - name: Download the game
-        run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 -beta beta +app_update 1007 +quit
+        run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 +app_update 1007 +quit
 
-      - name: Run the client
+      - name: Run the client (cvarlist)
         run: |
           cd ${{ github.workspace }}\asrd
           echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
           cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test
-          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client.log
+          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client-new.log
 
-      - name: Run the server
+      - name: Run the client (cvarlist_rd)
+        run: |
+          cd ${{ github.workspace }}\asrd
+          echo "cvarlist_rd 3; quit" > reactivedrop/cfg/test.cfg
+          cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test
+          findstr /b "\""" ${{ github.workspace }}\asrd\reactivedrop\console.log > ${{ github.workspace }}/asrd/reactivedrop/cvars-client-new.txt
+          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client-new.log
+
+      - name: Run the server (cvarlist)
         run: |
           cd ${{ github.workspace }}\asrd
           echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/servertest.cfg
@@ -56,6 +67,7 @@ jobs:
         with:
           name: rd-artifacts
           path: |
+            ${{ github.workspace }}/asrd/reactivedrop/cvars-client-new.txt
             ${{ github.workspace }}/asrd/reactivedrop/cvars-client.txt
             ${{ github.workspace }}/asrd/reactivedrop/cvars-server.txt
             ${{ github.workspace }}/asrd/console-client.log
