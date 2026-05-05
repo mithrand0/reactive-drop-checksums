@@ -49,7 +49,7 @@ function e(?string $msg = '', ...$args) {
 
 $cvargroup = [];
 
-foreach (['server', 'client'] as $t) {
+foreach (['server', 'client-new'] as $t) {
   $header = [];
 
   $file = sprintf('%s/asrd/reactivedrop/cvars-%s.txt', $dir, $t);
