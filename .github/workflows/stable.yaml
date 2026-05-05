@@ -48,8 +48,8 @@ jobs:
           cd ${{ github.workspace }}\asrd
           echo "cvarlist_rd 3; quit" > reactivedrop/cfg/test.cfg
           cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test
-          findstr /b "\""" ${{ github.workspace }}\asrd\reactivedrop\console.log > ${{ github.workspace }}/asrd/reactivedrop/cvars-client.txt
-          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client.log
+          findstr /b "\""" ${{ github.workspace }}\asrd\reactivedrop\console.log > ${{ github.workspace }}/asrd/reactivedrop/cvars-client-new.txt
+          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client-new.log
 
       - name: Run the server (cvarlist)
         run: |
