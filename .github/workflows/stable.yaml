@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Cache files
         id: cache-app
@@ -95,7 +95,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Download artifacts
         uses: actions/download-artifact@v8
