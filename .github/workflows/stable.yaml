@@ -65,8 +65,10 @@ jobs:
 
           $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
 
+          Write-Host "testing maps:"
+
           foreach ($m in $maps) {
-              Write-Host "=== Testing map $($m.Name) ==="
+              Write-Host "- $($m.Name) ..."
 
               # Start server for this map and wait until it exits
               cmd /c start /wait srcds_console.exe `
@@ -77,9 +79,9 @@ jobs:
                   +quit
 
               mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/maps-logs/$mapName.log
-
-              Write-Host "=== Finished $($m.Name) ==="
           }
+
+          Write-Host "testing finished!"
 
       - name: Manifest
         run: |
