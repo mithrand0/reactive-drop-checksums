@@ -61,10 +61,24 @@ jobs:
       - name: Run the server (test bundled maps)
         run: |
           cd ${{ github.workspace }}\asrd
-          Get-ChildItem reactivedrop/maps -Filter *.bsp | ForEach-Object { "map $($_.Name)" } > reactivedrop/cfg/maptest.cfg
-          type reactivedrop/cfg/maptest.cfg
-          cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec maptest
-          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
+
+          $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
+
+          foreach ($m in $maps) {
+              Write-Host "=== Testing map $($m.Name) ==="
+
+              # Start server for this map and wait until it exits
+              cmd /c start /wait srcds_console.exe `
+                  -console -condebug -conclearlog `
+                  -game reactivedrop -noassert `
+                  +sv_lan 1 `
+                  +map $($m.Name) `
+                  +quit
+
+              mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/maps-logs/$mapName.log
+
+              Write-Host "=== Finished $($m.Name) ==="
+          }
 
       - name: Manifest
         run: |
