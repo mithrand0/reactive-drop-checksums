@@ -95,6 +95,7 @@ jobs:
             ${{ github.workspace }}/asrd/console-client.log
             ${{ github.workspace }}/asrd/console-server.log
             ${{ github.workspace }}/asrd/depotcache
+            ${{ github.workspace }}/asrd/map-logs
 
   dispatch-anticheat:
     name: dispatch depending repositories
