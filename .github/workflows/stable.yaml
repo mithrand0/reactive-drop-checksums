@@ -61,6 +61,7 @@ jobs:
       - name: Run the server (test bundled maps)
         run: |
           cd ${{ github.workspace }}\asrd
+          New-Item -ItemType Directory -Force -Path ${{ github.workspace }}/asrd/maps-logs | Out-Null
 
           $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
 
