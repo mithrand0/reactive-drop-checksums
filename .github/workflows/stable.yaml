@@ -36,6 +36,33 @@ jobs:
       - name: Download the game
         run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 +app_update 1007 +quit
 
+      - name: Run the server (test bundled maps)
+        run: |
+          cd ${{ github.workspace }}\asrd
+          New-Item -ItemType Directory -Force -Path ${{ github.workspace }}/asrd/map-logs/server | Out-Null
+
+          $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
+
+          Write-Host "testing maps:"
+
+          foreach ($m in $maps) {
+
+              $name = $m.Name.replace(".bsp", "")
+              Write-Host "- $name ..."
+
+              # Start server for this map and wait until it exits
+              cmd /c start /wait srcds_console.exe `
+                  -console -condebug -conclearlog `
+                  -game reactivedrop -noassert `
+                  +sv_lan 1 `
+                  +map $name `
+                  +quit
+
+              mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/map-logs/server/$name.log
+          }
+
+          Write-Host "testing finished!"
+
       - name: Run the client (cvarlist)
         run: |
           cd ${{ github.workspace }}\asrd
@@ -58,30 +85,6 @@ jobs:
           cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec servertest
           mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
 
-      - name: Run the server (test bundled maps)
-        run: |
-          cd ${{ github.workspace }}\asrd
-          New-Item -ItemType Directory -Force -Path ${{ github.workspace }}/asrd/maps-logs | Out-Null
-
-          $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
-
-          Write-Host "testing maps:"
-
-          foreach ($m in $maps) {
-              Write-Host "- $($m.Name) ..."
-
-              # Start server for this map and wait until it exits
-              cmd /c start /wait srcds_console.exe `
-                  -console -condebug -conclearlog `
-                  -game reactivedrop -noassert `
-                  +sv_lan 1 `
-                  +map $($m.Name) `
-                  +quit
-
-              mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/maps-logs/$mapName.log
-          }
-
-          Write-Host "testing finished!"
 
       - name: Manifest
         run: |
