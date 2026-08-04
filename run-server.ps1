@@ -8,3 +8,10 @@ cmd /c start /wait srcds_console.exe -console -condebug -conclearlog `
 # move console logfile
 cat reactivedrop/console.log
 mv -Force reactivedrop/console.log $logFile
+
+# check for errors
+$pattern = "Shutdown function ShutdownMixerControls() not in list!!!"
+if (-not (Select-String -Path $logFile -Pattern "$pattern")) {
+    Write-Error "Shutdown line missing in $logFile"
+    exit 1
+}

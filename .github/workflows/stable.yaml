@@ -86,7 +86,7 @@ jobs:
           $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
           $mapList = $maps | ForEach-Object { $_.Name.replace(".bsp", "") }
 
-          $mapsList | ForEach-Object {
+          $mapList | ForEach-Object {
             echo "::group::-- Testing map: $_ (server) --"   
             echo "map $_; quit" > reactivedrop/cfg/test.cfg
             ../run-server.ps1 map-logs/map-$_.server.log
@@ -143,7 +143,7 @@ jobs:
 
       - name: Checkout project
         uses: actions/checkout@v7
-        
+
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
