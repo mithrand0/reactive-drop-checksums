@@ -5,8 +5,8 @@ $logFile = $args[0]
 cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test
 
 # move console logfile
-cat reactivedrop/console.log
 mv -Force reactivedrop/console.log $logFile
+Get-Content $logFile -Tail 50
 
 # check for errors
 $pattern = 'Shutdown function ShutdownMixerControls() not in list!!!'
