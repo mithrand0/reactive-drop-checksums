@@ -7,7 +7,7 @@ cmd /c start /wait srcds_console.exe -console -condebug -conclearlog `
 
 # move console logfile
 mv -Force reactivedrop/console.log $logFile
-Get-Content $logFile -Tail 20
+Get-Content $logFile -Tail 50
 
 # check for errors
 $pattern = 'Shutdown function ShutdownMixerControls() not in list!!!'
