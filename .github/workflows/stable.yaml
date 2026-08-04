@@ -17,6 +17,11 @@ jobs:
     runs-on: windows-2022
     timeout-minutes: 30
     steps:
+      - name: Prepare commands
+        run: |
+          Write-Host "CMD_CLIENT=cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test" >> $GITHUB_OUTPUT
+          Write-Host "CMD_SERVER=cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec test" >> $GITHUB_OUTPUT
+      
       - name: Checkout project
         uses: actions/checkout@v7
 
@@ -34,61 +39,92 @@ jobs:
       - name: Setup steamcmd
         uses: CyberAndrii/setup-steamcmd@v1
       - name: Download the game
-        run: steamcmd +force_install_dir ${{ github.workspace }}\asrd +logon anonymous +app_update 563560 +app_update 1007 +quit
-
-      - name: Run the server (test bundled maps)
         run: |
-          cd ${{ github.workspace }}\asrd
-          New-Item -ItemType Directory -Force -Path ${{ github.workspace }}/asrd/map-logs/server | Out-Null
+          steamcmd +force_install_dir ${{ github.workspace }}\asrd `
+            +logon anonymous +app_update 563560 +app_update 1007 +quit
 
-          $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
-
-          Write-Host "testing maps:"
-
-          foreach ($m in $maps) {
-
-              $name = $m.Name.replace(".bsp", "")
-              Write-Host "- $name ..."
-
-              # Start server for this map and wait until it exits
-              cmd /c start /wait srcds_console.exe `
-                  -console -condebug -conclearlog `
-                  -game reactivedrop -noassert `
-                  +sv_lan 1 `
-                  +map $name `
-                  +quit
-
-              mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/map-logs/server/$name.log
-          }
-
-          Write-Host "testing finished!"
+      #########################################################
+      # run client and server and export cvarlist while doing #
+      #########################################################
 
       - name: Run the client (cvarlist)
         run: |
           cd ${{ github.workspace }}\asrd
           echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
-          cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test
-          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client-new.log
+          ${{ needs.output.CMD_CLIENT }}
+          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log `
+            ${{ github.workspace }}/asrd/console-client-new.log
 
       - name: Run the client (cvarlist_rd)
         run: |
           cd ${{ github.workspace }}\asrd
           echo "cvarlist_rd 3; quit" > reactivedrop/cfg/test.cfg
-          cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test
+          ${{ needs.output.CMD_SERVER }}
           findstr /b "\""" ${{ github.workspace }}\asrd\reactivedrop\console.log > ${{ github.workspace }}/asrd/reactivedrop/cvars-client-new.txt
-          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-client-new.log
+          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log `
+          ${{ github.workspace }}/asrd/console-client-new.log
 
       - name: Run the server (cvarlist)
         run: |
           cd ${{ github.workspace }}\asrd
-          echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/servertest.cfg
-          cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec servertest
-          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log ${{ github.workspace }}/asrd/console-server.log
+          echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/test.cfg
+          ${{ needs.output.CMD_SERVER }}
+          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log `
+            ${{ github.workspace }}/asrd/console-server.log
 
+      #########################################################
+      # run map specific tests and see if they load correctly #
+      #########################################################
 
-      - name: Manifest
+      - name: Export map list
         run: |
-          cp -Force -Recurse C:\hostedtoolcache\windows\steamcmd\latest\i386\depotcache ${{ github.workspace }}/asrd/depotcache
+          cd ${{ github.workspace }}\asrd
+
+          $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
+          $mapList = $maps | ForEach-Object { $_.Name.replace(".bsp", "") }
+          $mapStr = $mapList -join "," 
+
+          Write-Host "MAPLIST=$mapStr" >> $GITHUB_OUTPUT
+
+      - name: Create map logs folder
+        run: |
+          cd ${{ github.workspace }}\asrd
+          New-Item -ItemType Directory -Force `
+            -Path ${{ github.workspace }}/asrd/map-logs | Out-Null
+
+      - name: Run the server (map tests)
+        strategy:
+          matrix:
+            map: [ ${{ needs.compute.outputs.MAPLIST }} ]
+        run: |
+          
+          Write-Host "Testing map: ${{ matrix.map }}"
+          echo "map ${{ matrix.map }}; quit" > reactivedrop/cfg/test.cfg
+          ${{ needs.output.CMD_SERVER }}
+          
+          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log `
+          ${{ github.workspace }}/asrd/map-logs/${{ matrix.map }}.server.log
+
+          Write-Host "testing finished!"
+
+      - name: Run the client (map tests)
+        strategy:
+          matrix:
+            map: [ ${{ needs.compute.outputs.MAPLIST }} ]
+        run: |
+          
+          Write-Host "Testing map: ${{ matrix.map }}"
+          ${{ needs.output.CMD_CLIENT }}
+          
+          mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log `
+            ${{ github.workspace }}/asrd/map-logs/${{ matrix.map }}.client.log
+          
+          Write-Host "testing finished!"
+
+      - name: Store manifest
+        run: |
+          cp -Force -Recurse C:\hostedtoolcache\windows\steamcmd\latest\i386\depotcache `
+            ${{ github.workspace }}/asrd/depotcache
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
