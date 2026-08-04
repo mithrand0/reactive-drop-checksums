@@ -64,7 +64,8 @@ jobs:
           echo "cvarlist_rd 3; quit" > reactivedrop/cfg/test.cfg
           ../run-client.ps1 map-logs/cvarlist-rd.client.log
 
-          # convert format to match the old cvarlist output          
+          # convert format to match the old cvarlist output
+          dir     
           findstr /b "\""" map-logs/cvarlist-rd.client.log `
             > reactivedrop/cvars-client-new.txt
           echo "::endgroup::"
