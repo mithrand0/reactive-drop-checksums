@@ -80,20 +80,13 @@ jobs:
       #########################################################
       # run map specific tests and see if they load correctly #
       #########################################################
-      - name: Export map list
-        run: |
-          cd ${{ github.workspace }}\asrd
-
-          $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
-          $mapList = $maps | ForEach-Object { $_.Name.replace(".bsp", "") }
-          $mapJson = $mapList | ConvertTo-Json
-          Write-Host "MAPLIST=$mapJson" >> $GITHUB_OUTPUT
-
       - name: Run map tests
         working-directory: ${{ github.workspace }}\asrd
         run: |
-          $maps = ${{ needs.output.MAPLIST }} | ConvertFrom-Json
-          $maps | ForEach-Object {
+          $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
+          $mapList = $maps | ForEach-Object { $_.Name.replace(".bsp", "") }
+
+          $mapsList | ForEach-Object {
             echo "::group::-- Testing map: $_ (server) --"   
             echo "map $_; quit" > reactivedrop/cfg/test.cfg
             ../run-server.ps1 map-logs/map-$_.server.log
