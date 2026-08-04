@@ -99,7 +99,6 @@ jobs:
 
       - name: Run the server (map tests)
         strategy:
-          fail-fast: true
           matrix:
             map: ${{ fromJSON(compute.outputs.MAPLIST) }}
         run: |
@@ -116,7 +115,6 @@ jobs:
 
       - name: Run the client (map tests)
         strategy:
-          fail-fast: true
           matrix:
             map: ${{ fromJSON(needs.compute.outputs.MAPLIST) }}
         run: |
