@@ -140,6 +140,10 @@ jobs:
     needs: run-game
     timeout-minutes: 5
     steps:
+
+      - name: Checkout project
+        uses: actions/checkout@v7
+        
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
