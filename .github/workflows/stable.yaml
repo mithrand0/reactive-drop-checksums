@@ -98,15 +98,13 @@ jobs:
           $maps = ${{ needs.output.MAPLIST }} | ConvertFrom-Json
           $maps | ForEach-Object {
             echo "::group::-- Testing map: $_ (server) --"   
-
-            Write-Host "Testing map: ${{ matrix.map }}"
-            echo "map ${{ matrix.map }}; quit" > reactivedrop/cfg/test.cfg
+            echo "map $_; quit" > reactivedrop/cfg/test.cfg
             ${{ needs.output.CMD_SERVER }}
             ${{ needs.output.CMD_LOGFILE }} ${{ github.workspace }}/asrd/logs/map-$_.server.log
-
             echo "::endgroup::"
 
-            echo "::group::-- Testing map: $_ (server) --"   
+            echo "::group::-- Testing map: $_ (client) --"   
+            echo "map $_; quit" > reactivedrop/cfg/test.cfg
             ${{ needs.output.CMD_CLIENT }}
             ${{ needs.output.CMD_LOGFILE }} ${{ github.workspace }}/asrd/logs/map-$_.client.log
             
