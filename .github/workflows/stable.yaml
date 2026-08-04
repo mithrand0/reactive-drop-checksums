@@ -63,9 +63,10 @@ jobs:
           echo "::group::-- cvarlist_rd client --"   
           echo "cvarlist_rd 3; quit" > reactivedrop/cfg/test.cfg
           ../run-client.ps1 map-logs/cvarlist-rd.client.log
+          echo "::endgroup::"
 
-          # convert format to match the old cvarlist output
-          dir     
+          echo "::group::-- cvarlist_rd conversion --"
+          dir map-logs
           findstr /b "\""" map-logs/cvarlist-rd.client.log `
             > reactivedrop/cvars-client-new.txt
           echo "::endgroup::"
