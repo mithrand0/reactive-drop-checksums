@@ -101,7 +101,7 @@ jobs:
         strategy:
           fail-fast: true
           matrix:
-            map: ${{ fromJSON(compute.outputs.MAPLIST }}) ]
+            map: ${{ fromJSON(compute.outputs.MAPLIST }})
         run: |
           
           Write-Host "Testing map: ${{ matrix.map }}"
