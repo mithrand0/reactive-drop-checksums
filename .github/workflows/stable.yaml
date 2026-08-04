@@ -56,12 +56,12 @@ jobs:
         working-directory: ${{ github.workspace }}\asrd
         run: |
           echo "::group::-- cvarlist client --"   
-          echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
+          echo "cvarlist log cvars-client.txt" > reactivedrop/cfg/test.cfg
           ../run-client.ps1 map-logs/cvarlist.client.log
           echo "::endgroup::"
 
           echo "::group::-- cvarlist_rd client --"   
-          echo "cvarlist_rd 3; quit" > reactivedrop/cfg/test.cfg
+          echo "cvarlist_rd 3" > reactivedrop/cfg/test.cfg
           ../run-client.ps1 map-logs/cvarlist-rd.client.log
           echo "::endgroup::"
 
@@ -74,7 +74,7 @@ jobs:
       - name: Run the server (cvarlist)
         working-directory: ${{ github.workspace }}\asrd
         run: |
-          echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/test.cfg
+          echo "cvarlist log cvars-server.txt; map lobby" > reactivedrop/cfg/test.cfg
           ../run-server.ps1 map-logs/cvarlist.server.log
 
       #########################################################
@@ -88,12 +88,12 @@ jobs:
 
           $mapList | ForEach-Object {
             echo "::group::-- Testing map: $_ (server) --"   
-            echo "map $_; quit" > reactivedrop/cfg/test.cfg
+            echo "map $_" > reactivedrop/cfg/test.cfg
             ../run-server.ps1 map-logs/map-$_.server.log
             echo "::endgroup::"
 
             echo "::group::-- Testing map: $_ (client) --"   
-            echo "map $_; quit" > reactivedrop/cfg/test.cfg
+            echo "map $_" > reactivedrop/cfg/test.cfg
             ../run-client.ps1 map-logs/map-$_.client.log
             echo "::endgroup::"
           }
