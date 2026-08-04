@@ -13,14 +13,10 @@ on:
 
 jobs:
 
-
-  #########################################################
-  # setup workflow #
-  #########################################################
   run-game:
-    name: setup the game
+    name: run client and server
     runs-on: windows-2022
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - name: Prepare commands
         run: |
@@ -41,6 +37,10 @@ jobs:
         run: |
           ./cleanup-steamcmd.ps1  ${{ github.workspace }}\asrd
 
+        ##################
+        # setup workflow #
+        ##################
+
       - name: Setup steamcmd
         uses: CyberAndrii/setup-steamcmd@v1
       - name: Download the game
@@ -53,6 +53,10 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force `
             -Path ${{ github.workspace }}/asrd/logs | Out-Null
+
+        ############################
+        # run and export cvarlist  #
+        ############################
 
       - name: Run the client (cvarlist)
         working-directory: ${{ github.workspace }}\asrd
@@ -112,6 +116,10 @@ jobs:
           }
           
           Write-Host "testing finished!"
+
+        ###################
+        # store some data #
+        ###################
 
       - name: Store manifest
         run: |
