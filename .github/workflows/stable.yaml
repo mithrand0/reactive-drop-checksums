@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "::group::-- cvarlist client --"   
           echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
-          ./run-client.ps1 map-logs/cvarlist.client.log
+          ../run-client.ps1 map-logs/cvarlist.client.log
           echo "::endgroup::"
 
           echo "::group::-- cvarlist_rd client --"   
