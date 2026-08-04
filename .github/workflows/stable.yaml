@@ -62,7 +62,7 @@ jobs:
 
           echo "::group::-- cvarlist_rd client --"   
           echo "cvarlist_rd 3; quit" > reactivedrop/cfg/test.cfg
-          ./run-client.ps1 map-logs/cvarlist-rd.client.log
+          ../run-client.ps1 map-logs/cvarlist-rd.client.log
 
           # convert format to match the old cvarlist output          
           findstr /b "\""" map-logs/cvarlist-rd.client.log `
@@ -73,7 +73,7 @@ jobs:
         working-directory: ${{ github.workspace }}\asrd
         run: |
           echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/test.cfg
-          ./run-server.ps1 map-logs/cvarlist.server.log
+          ../run-server.ps1 map-logs/cvarlist.server.log
 
       #########################################################
       # run map specific tests and see if they load correctly #
@@ -94,12 +94,12 @@ jobs:
           $maps | ForEach-Object {
             echo "::group::-- Testing map: $_ (server) --"   
             echo "map $_; quit" > reactivedrop/cfg/test.cfg
-            ./run-server.ps1 map-logs/map-$_.server.log
+            ../run-server.ps1 map-logs/map-$_.server.log
             echo "::endgroup::"
 
             echo "::group::-- Testing map: $_ (client) --"   
             echo "map $_; quit" > reactivedrop/cfg/test.cfg
-            ./run-client.ps1 map-logs/map-$_.client.log
+            ../run-client.ps1 map-logs/map-$_.client.log
             echo "::endgroup::"
           }
           
