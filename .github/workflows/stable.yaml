@@ -101,7 +101,7 @@ jobs:
       - name: Run the server (map tests)
         strategy:
           matrix:
-            map: [ ${{ needs.compute.outputs.MAPLIST }} ]
+            map: ${{ needs.compute.outputs.MAPLIST }}
         run: |
           
           Write-Host "Testing map: ${{ matrix.map }}"
