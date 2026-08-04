@@ -66,9 +66,9 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::-- cvarlist_rd conversion --"
-          dir map-logs
-          findstr /b "\""" map-logs/cvarlist-rd.client.log `
-            > reactivedrop/cvars-client-new.txt
+          cd map-logs
+          findstr /b "\""" cvarlist-rd.client.log `
+            > ../reactivedrop/cvars-client-new.txt
           echo "::endgroup::"
 
       - name: Run the server (cvarlist)
