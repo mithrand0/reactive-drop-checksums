@@ -51,38 +51,39 @@ jobs:
       - name: Create log folders
         working-directory: ${{ github.workspace }}\asrd
         run: |
-          New-Item -ItemType Directory -Force `
-            -Path ${{ github.workspace }}/asrd/logs | Out-Null
+          New-Item -ItemType Directory -Force -Path map-logs | Out-Null
 
         ############################
         # run and export cvarlist  #
         ############################
 
-      - name: Run the client (cvarlist)
+      - name: Run the client (cvarlist, cvarlist_rd)
         working-directory: ${{ github.workspace }}\asrd
         run: |
+          echo "::group::-- cvarlist client --"   
           echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
           ${{ needs.output.CMD_CLIENT }}
-          ${{ needs.output.CMD_LOGFILE }} ${{ github.workspace }}/asrd/logs/cvarlist.client.log
+          ${{ needs.output.CMD_LOGFILE }} map-logs/cvarlist.client.log
+          echo "::endgroup::"
 
-      - name: Run the client (cvarlist_rd)
-        working-directory: ${{ github.workspace }}\asrd
-        run: |
+          echo "::group::-- cvarlist_rd client --"   
+
           echo "cvarlist_rd 3; quit" > reactivedrop/cfg/test.cfg
           ${{ needs.output.CMD_SERVER }}
 
           # convert format to match the old cvarlist output          
-          findstr /b "\""" ${{ github.workspace }}\asrd\reactivedrop\console.log `
-            > ${{ github.workspace }}/asrd/reactivedrop/cvars-client-new.txt
+          findstr /b "\""" reactivedrop\console.log `
+            > reactivedrop/cvars-client-new.txt
 
-          ${{ needs.output.CMD_LOGFILE }} ${{ github.workspace }}/asrd/logs/cvarlist-rd.client.log
+          ${{ needs.output.CMD_LOGFILE }} map-logs/cvarlist-rd.client.log
+          echo "::endgroup::"
 
       - name: Run the server (cvarlist)
         working-directory: ${{ github.workspace }}\asrd
         run: |
           echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/test.cfg
           ${{ needs.output.CMD_SERVER }}
-          ${{ needs.output.CMD_LOGFILE }} ${{ github.workspace }}/asrd/logs/cvarlist.server.log
+          ${{ needs.output.CMD_LOGFILE }} map-logs/cvarlist.server.log
 
       #########################################################
       # run map specific tests and see if they load correctly #
@@ -104,13 +105,13 @@ jobs:
             echo "::group::-- Testing map: $_ (server) --"   
             echo "map $_; quit" > reactivedrop/cfg/test.cfg
             ${{ needs.output.CMD_SERVER }}
-            ${{ needs.output.CMD_LOGFILE }} ${{ github.workspace }}/asrd/logs/map-$_.server.log
+            ${{ needs.output.CMD_LOGFILE }} map-logs/map-$_.server.log
             echo "::endgroup::"
 
             echo "::group::-- Testing map: $_ (client) --"   
             echo "map $_; quit" > reactivedrop/cfg/test.cfg
             ${{ needs.output.CMD_CLIENT }}
-            ${{ needs.output.CMD_LOGFILE }} ${{ github.workspace }}/asrd/logs/map-$_.client.log
+            ${{ needs.output.CMD_LOGFILE }} map-logs/map-$_.client.log
             
             echo "::endgroup::"
           }
@@ -134,8 +135,6 @@ jobs:
             ${{ github.workspace }}/asrd/reactivedrop/cvars-client-new.txt
             ${{ github.workspace }}/asrd/reactivedrop/cvars-client.txt
             ${{ github.workspace }}/asrd/reactivedrop/cvars-server.txt
-            ${{ github.workspace }}/asrd/console-client.log
-            ${{ github.workspace }}/asrd/console-server.log
             ${{ github.workspace }}/asrd/depotcache
             ${{ github.workspace }}/asrd/map-logs
 
