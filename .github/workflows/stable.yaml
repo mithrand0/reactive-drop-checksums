@@ -88,9 +88,8 @@ jobs:
 
           $maps = Get-ChildItem reactivedrop/maps -Filter *.bsp
           $mapList = $maps | ForEach-Object { $_.Name.replace(".bsp", "") }
-          $mapStr = $mapList -join "," 
-
-          Write-Host "MAPLIST=$mapStr" >> $GITHUB_OUTPUT
+          $mapJson = $mapList | ConvertTo-Json
+          Write-Host "MAPLIST=$mapJson" >> $GITHUB_OUTPUT
 
       - name: Create map logs folder
         run: |
@@ -100,8 +99,9 @@ jobs:
 
       - name: Run the server (map tests)
         strategy:
+          fail-fast: true
           matrix:
-            map: ${{ needs.compute.outputs.MAPLIST }}
+            map: ${{ fromJSON(compute.outputs.MAPLIST }}) ]
         run: |
           
           Write-Host "Testing map: ${{ matrix.map }}"
@@ -116,8 +116,9 @@ jobs:
 
       - name: Run the client (map tests)
         strategy:
+          fail-fast: true
           matrix:
-            map: [ ${{ needs.compute.outputs.MAPLIST }} ]
+            map: ${{ fromJSON(needs.compute.outputs.MAPLIST }})
         run: |
           
           Write-Host "Testing map: ${{ matrix.map }}"
