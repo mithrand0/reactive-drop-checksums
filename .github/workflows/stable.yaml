@@ -18,11 +18,6 @@ jobs:
     runs-on: windows-2022
     timeout-minutes: 30
     steps:
-      - name: Prepare commands
-        run: |
-          Write-Host "CMD_CLIENT=cmd /c start /wait reactivedrop.exe -textmode -condebug -conclearlog +exec test" >> $GITHUB_OUTPUT
-          Write-Host "CMD_SERVER=cmd /c start /wait srcds_console.exe -console -condebug -conclearlog -game reactivedrop -noassert +sv_lan 1 +exec test" >> $GITHUB_OUTPUT
-          Write-Host "CMD_LOGFILE=cat ${{ github.workspace }}/asrd/reactivedrop/console.log; mv -Force ${{ github.workspace }}/asrd/reactivedrop/console.log" >> $GITHUB_OUTPUT
       - name: Checkout project
         uses: actions/checkout@v7
 
@@ -62,28 +57,23 @@ jobs:
         run: |
           echo "::group::-- cvarlist client --"   
           echo "cvarlist log cvars-client.txt; quit" > reactivedrop/cfg/test.cfg
-          ${{ needs.output.CMD_CLIENT }}
-          ${{ needs.output.CMD_LOGFILE }} map-logs/cvarlist.client.log
+          ./run-client.ps1 map-logs/cvarlist.client.log
           echo "::endgroup::"
 
           echo "::group::-- cvarlist_rd client --"   
-
           echo "cvarlist_rd 3; quit" > reactivedrop/cfg/test.cfg
-          ${{ needs.output.CMD_SERVER }}
+          ./run-client.ps1 map-logs/cvarlist-rd.client.log
 
           # convert format to match the old cvarlist output          
-          findstr /b "\""" reactivedrop\console.log `
+          findstr /b "\""" map-logs/cvarlist-rd.client.log `
             > reactivedrop/cvars-client-new.txt
-
-          ${{ needs.output.CMD_LOGFILE }} map-logs/cvarlist-rd.client.log
           echo "::endgroup::"
 
       - name: Run the server (cvarlist)
         working-directory: ${{ github.workspace }}\asrd
         run: |
           echo "cvarlist log cvars-server.txt; map lobby; quit" > reactivedrop/cfg/test.cfg
-          ${{ needs.output.CMD_SERVER }}
-          ${{ needs.output.CMD_LOGFILE }} map-logs/cvarlist.server.log
+          ./run-server.ps1 map-logs/cvarlist.server.log
 
       #########################################################
       # run map specific tests and see if they load correctly #
@@ -104,15 +94,12 @@ jobs:
           $maps | ForEach-Object {
             echo "::group::-- Testing map: $_ (server) --"   
             echo "map $_; quit" > reactivedrop/cfg/test.cfg
-            ${{ needs.output.CMD_SERVER }}
-            ${{ needs.output.CMD_LOGFILE }} map-logs/map-$_.server.log
+            ./run-server.ps1 map-logs/map-$_.server.log
             echo "::endgroup::"
 
             echo "::group::-- Testing map: $_ (client) --"   
             echo "map $_; quit" > reactivedrop/cfg/test.cfg
-            ${{ needs.output.CMD_CLIENT }}
-            ${{ needs.output.CMD_LOGFILE }} map-logs/map-$_.client.log
-            
+            ./run-client.ps1 map-logs/map-$_.client.log
             echo "::endgroup::"
           }
           
