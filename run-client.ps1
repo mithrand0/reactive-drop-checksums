@@ -9,8 +9,8 @@ cat reactivedrop/console.log
 mv -Force reactivedrop/console.log $logFile
 
 # check for errors
-$pattern = "Shutdown function ShutdownMixerControls() not in list!!!"
-if (-not (Select-String -Path $logFile -Pattern "$pattern")) {
+$pattern = 'Shutdown function ShutdownMixerControls() not in list!!!'
+if (-not (Select-String -Path $logFile -SimpleMatch $pattern)) {
     Write-Error "Shutdown line missing in $logFile"
     exit 1
 }
