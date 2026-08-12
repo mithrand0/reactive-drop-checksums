@@ -3,11 +3,12 @@ $logFile = $args[0]
 
 # add shutdown hook
 $pattern = "shutting down server"
-echo "$pattern; quit" > reactivedrop/cfg/shutdown.cfg
+echo "" >> reactivedrop/cfg/test.cfg
+echo "say $pattern; quit" >> reactivedrop/cfg/test.cfg
 
 # run client and wait for output
 cmd /c start /wait srcds_console.exe -console -condebug -conclearlog `
-    -game reactivedrop -noassert +sv_lan 1 +exec test +exec shutdown
+    -game reactivedrop -noassert +sv_lan 1 +exec test
 
 # move console logfile
 mv -Force reactivedrop/console.log $logFile
